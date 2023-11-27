@@ -1,0 +1,61 @@
+---
+title: "ETL"
+author: "Haider Abbas Mirza"
+date: "2023-11-25"
+output: html_document
+---
+
+Load Libraries
+```{r}
+library(dplyr)
+```
+Data Pre-processing
+```{r}
+# DepMap Portal API was used to fetch the cancer cell line datafiles -CCLE_RNAseq_rsem_genes_tpm_20180929.txt.gz and Cell_lines_annotations_20181226.txt which were manually downloaded and converted to csv files. However this process can also be done by setting a conda enviroment to interact with the Dep Map API (conda install -c bioconda bioconductor-depmap) to extract the files
+
+# Set the working Directory
+setwd("C:/Users/Haider/Desktop/CS 116/HBK project")
+
+# Load both data sets as csv files and set the appropriate variable names
+rnaseq_tpm <- read.csv("CCLE_RNAseq_rsem_genes_tpm_20180929.csv", check.names = FALSE)
+
+rnaseq_metadata <- read.csv("Cell_lines_annotations_20181226.csv")
+
+# Set the first row as the column names for the meta data file
+colnames(rnaseq_metadata) <- rnaseq_metadata[1,]
+rnaseq_metadata <- rnaseq_metadata[-1,]
+
+# Convert all blank values to NA values
+rnaseq_metadata <- rnaseq_metadata %>% mutate_all(na_if,"")
+
+```
+
+Transformation
+```{r}
+# Drop columns with NA values that are greater than 700
+rnaseq_metadata <- rnaseq_metadata[(!(colSums(is.na(rnaseq_metadata))>700))]
+
+# Remove the transcript ID column in the rnaseq_tpm file
+rnaseq_tpm <- rnaseq_tpm[,-2]
+rnaseq_tpm_new <- rnaseq_tpm
+
+# Apply lo2(x)+0.001 to all numeral values in the rnaseq_tpm_new file
+rnaseq_tpm_new[,c(2:1020)] <- lapply(rnaseq_tpm_new[,c(2:1020)], function(x) log2(x)+0.001)
+
+# Subset rnaseq_metadata based on common cell line names between rnaseq_metadata and rnaseq_tpm
+ID_names <- colnames(rnaseq_tpm_new[,c(2:1020)])
+
+rnaseq_metadata_new <- subset(rnaseq_metadata,(CCLE_ID %in% ID_names))
+
+# reorder rnaseq_metadata dataframe based on rnaseq_tpm cell line names
+rnaseq_metadata_new$CCLE_ID = factor(rnaseq_metadata_new$CCLE_ID, levels = ID_names)
+rnaseq_metadata_new <- rnaseq_metadata_new[order(rnaseq_metadata_new$CCLE_ID), ]
+
+# Write both transformed files as csv files
+#write.csv(rnaseq_metadata_new,"C:/Users/Haider/Desktop/CS 116/HBK project/rnaseq_metadata_new.csv")
+
+#write.csv(rnaseq_tpm_new,"C:/Users/Haider/Desktop/CS 116/HBK project/rnaseq_tpm_new.csv")
+
+```
+
+
