@@ -12,18 +12,18 @@ library(dplyr)
 Data Pre-processing
 ```{r}
 # DepMap Portal API was used to fetch the cancer cell line datafiles -CCLE_RNAseq_rsem_genes_tpm_20180929.txt.gz and Cell_lines_annotations_20181226.txt 
-which were manually downloaded and converted to csv files. However, this process can also be done by setting a conda environment 
+which were manually downloaded and converted to CSV files. However, this process can also be done by setting a conda environment 
 to interact with the Dep Map API (conda install -c bioconda bioconductor-depmap) to extract the files
 
-# Set the working Directory
+# Set the Working Directory
 setwd("C:/Users/Haider/Desktop/CS 116/HBK project")
 
-# Load both data sets as csv files and set the appropriate variable names
+# Load both data sets as CSV files and set the appropriate variable names
 rnaseq_tpm <- read.csv("CCLE_RNAseq_rsem_genes_tpm_20180929.csv", check.names = FALSE)
 
 rnaseq_metadata <- read.csv("Cell_lines_annotations_20181226.csv")
 
-# Set the first row as the column names for the meta data file
+# Set the first row as the column name for the metadata file
 colnames(rnaseq_metadata) <- rnaseq_metadata[1,]
 rnaseq_metadata <- rnaseq_metadata[-1,]
 
@@ -53,10 +53,10 @@ rnaseq_metadata_new <- subset(rnaseq_metadata,(CCLE_ID %in% ID_names))
 rnaseq_metadata_new$CCLE_ID = factor(rnaseq_metadata_new$CCLE_ID, levels = ID_names)
 rnaseq_metadata_new <- rnaseq_metadata_new[order(rnaseq_metadata_new$CCLE_ID), ]
 
-# Write both transformed files as csv files
-#write.csv(rnaseq_metadata_new,"C:/Users/Haider/Desktop/CS 116/HBK project/rnaseq_metadata_new.csv")
+# Write both transformed files as CSV files
+write.csv(rnaseq_metadata_new,"C:/Users/Haider/Desktop/CS 116/HBK project/rnaseq_metadata_new.csv")
 
-#write.csv(rnaseq_tpm_new,"C:/Users/Haider/Desktop/CS 116/HBK project/rnaseq_tpm_new.csv")
+write.csv(rnaseq_tpm_new,"C:/Users/Haider/Desktop/CS 116/HBK project/rnaseq_tpm_new.csv")
 
 ```
 
