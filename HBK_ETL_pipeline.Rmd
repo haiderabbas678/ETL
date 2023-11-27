@@ -41,7 +41,7 @@ rnaseq_metadata <- rnaseq_metadata[(!(colSums(is.na(rnaseq_metadata))>700))]
 rnaseq_tpm <- rnaseq_tpm[,-2]
 rnaseq_tpm_new <- rnaseq_tpm
 
-# Apply lo2(x)+0.001 to all numeral values in the rnaseq_tpm_new file
+# Apply log2(x)+0.001 to all numeral values in the rnaseq_tpm_new file
 rnaseq_tpm_new[,c(2:1020)] <- lapply(rnaseq_tpm_new[,c(2:1020)], function(x) log2(x)+0.001)
 
 # Subset rnaseq_metadata based on common cell line names between rnaseq_metadata and rnaseq_tpm
